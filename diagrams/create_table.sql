@@ -12,7 +12,7 @@
 /* ------- buyer ------- */
   CREATE TABLE IF NOT EXISTS buyer (
     id SERIAL,
-    buyer_referral_type_id BIGINT REFERENCES buyer_referral_type,
+    buyer_referral_type_id BIGINT NOT NULL REFERENCES buyer_referral_type,
     email_address VARCHAR(50) UNIQUE CONSTRAINT email_address CHECK (email_address ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9-]+[.][A-Za-z]+$'),
     first_name VARCHAR(50) NOT NULL CONSTRAINT first_name CHECK (first_name ~* '[a-zA-Z]+'),
     last_name VARCHAR(50) NOT NULL CONSTRAINT last_name CHECK ( last_name ~* '[a-zA-Z]+'),
@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS ticket (
   id SERIAL,
   event_id BIGINT NOT NULL REFERENCES event,
   buyer_id INT REFERENCES buyer,
-  row VARCHAR(10) NOT NULL,
+  row VARCHAR(5) NOT NULL,
   section INT NOT NULL,
   quantity INT NOT NULL,
   price INT NOT NULL,
