@@ -8,18 +8,15 @@ VALUES ('1', '123 apple.ave p.0 box 34', 'pumpkinville', '0123456789', '12341234
 INSERT INTO city_type (city) VALUES ('Montreal');
 INSERT INTO event (date, time, city_type_id) VALUES ('01/02/2019', '01:01:01', 1);
 
-INSERT INTO ticket (event_id, row, section, price)
-VALUES (4, 'A1', 23, 45);
+INSERT INTO ticket (event_id, row, section, price, quantity)
+VALUES (4, 'A1', 23, 45, 4);
 
 UPDATE ticket SET
   buyer_id = 1,
   date_sold = current_timestamp,
-  delivery_by_email = TRUE
-WHERE event_id = 4;
-
-UPDATE ticket SET
+  delivery_by_email = TRUE,
   sold = TRUE
-WHERE buyer_id = 1;
+WHERE event_id = 4;
 
 -- INSERT INTO ticket (event_id, buyer_email_adress, row, section, price, date_sold, delivery_by_mail, delivery_by_phone)
 -- VALUES

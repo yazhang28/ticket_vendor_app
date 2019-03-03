@@ -61,6 +61,7 @@ CREATE TABLE IF NOT EXISTS ticket (
   buyer_id INT REFERENCES buyer,
   row VARCHAR(10) NOT NULL,
   section INT NOT NULL,
+  quantity INT NOT NULL,
   price INT NOT NULL,
   sold BOOLEAN NOT NULL DEFAULT FALSE,
   date_sold TIMESTAMP,
