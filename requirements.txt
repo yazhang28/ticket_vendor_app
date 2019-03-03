@@ -1,3 +1,6 @@
-flask
-flask-restful
-psycopg2
+Flask==1.0.2
+Flask-RESTful==0.3.7
+flask-restplus==0.12.1
+Flask-SQLAlchemy==2.3.2
+SQLAlchemy==1.2.15
+crypto==1.4.1

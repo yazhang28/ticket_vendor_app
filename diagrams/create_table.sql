@@ -12,7 +12,7 @@
 /* ------- buyer ------- */
   CREATE TABLE IF NOT EXISTS buyer (
     id SERIAL,
-    buyer_referral_type_id BIGINT NOT NULL REFERENCES buyer_referral_type,
+    buyer_referral_type_id BIGINT REFERENCES buyer_referral_type,
     email_address VARCHAR(50) UNIQUE CONSTRAINT email_address CHECK (email_address ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9-]+[.][A-Za-z]+$'),
     first_name VARCHAR(50) NOT NULL CONSTRAINT first_name CHECK (first_name ~* '[a-zA-Z]+'),
     last_name VARCHAR(50) NOT NULL CONSTRAINT last_name CHECK ( last_name ~* '[a-zA-Z]+'),
@@ -38,8 +38,8 @@
     PRIMARY KEY (id)
   );
 
-/* ------- city_type ------- */
-  CREATE TABLE IF NOT EXISTS city_type (
+/* ------- city ------- */
+  CREATE TABLE IF NOT EXISTS city (
     id SERIAL,
     city VARCHAR(100) UNIQUE NOT NULL,
     PRIMARY KEY (id)
@@ -50,7 +50,7 @@
     id SERIAL,
     date DATE NOT NULL,
     time TIME WITH TIME ZONE NOT NULL,
-    city_type_id INT NOT NULL REFERENCES city_type,
+    city_type_id INT NOT NULL REFERENCES city,
     PRIMARY KEY (id)
   );
 
