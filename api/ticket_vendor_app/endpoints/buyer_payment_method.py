@@ -7,4 +7,4 @@ from flask import request
 from flask_restplus import Resource
 from api.config import api
 
-ns = api.namespace('ticket/event', description='Operations related to ticket event entity')
+ns = api.namespace('ticket_vendor_app/payment_method', description='Operations related to ticket_vendor_app payment_method entity')

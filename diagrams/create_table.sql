@@ -13,16 +13,17 @@
   CREATE TABLE IF NOT EXISTS buyer (
     id SERIAL,
     buyer_referral_type_id BIGINT NOT NULL REFERENCES buyer_referral_type,
+    buyer_referral_type_txt VARCHAR(50) NOT NULL,
     email_address VARCHAR(50) UNIQUE CONSTRAINT email_address CHECK (email_address ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9-]+[.][A-Za-z]+$'),
     first_name VARCHAR(50) NOT NULL CONSTRAINT first_name CHECK (first_name ~* '[a-zA-Z]+'),
-    last_name VARCHAR(50) NOT NULL CONSTRAINT last_name CHECK ( last_name ~* '[a-zA-Z]+'),
-    phone_number VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL CONSTRAINT last_name CHECK (last_name ~* '[a-zA-Z]+'),
+    phone_number VARCHAR(50),
     active BOOLEAN NOT NULL DEFAULT TRUE,
     PRIMARY KEY (id)
   );
 
-/* ------- payment_method ------- */
-  CREATE TABLE IF NOT EXISTS payment_method (
+/* ------- buyer_payment_method ------- */
+  CREATE TABLE IF NOT EXISTS buyer_payment_method (
     id SERIAL,
     buyer_id INT NOT NULL REFERENCES buyer,
     billing_address VARCHAR(100) CONSTRAINT billing_address CHECK (billing_address ~ '[\sA-Za-z0-9.]+'),

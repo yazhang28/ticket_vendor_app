@@ -1,23 +1,23 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-""" configuration run file of our api """
+""" API App """
+import os
 import logging.config
 from flask import Flask, Blueprint
-from api.ticket.endpoints.buyer import ns as ticket_buyer_namespace
-from api.ticket.endpoints.buyer_referral_type import ns as ticket_buyer_referral_type_namespace
-from api.ticket.endpoints.city import ns as ticket_city_namespace
-from api.ticket.endpoints.event import ns as ticket_event_namespace
-from api.ticket.endpoints.payment_method import ns as ticket_payment_method_namespace
-from api.ticket.endpoints.ticket import ns as ticket_ticket_namespace
+from api.ticket_vendor_app.endpoints.buyer import ns as ticket_buyer_namespace
+from api.ticket_vendor_app.endpoints.buyer_referral_type import ns as ticket_buyer_referral_type_namespace
+from api.ticket_vendor_app.endpoints.city import ns as ticket_city_namespace
+from api.ticket_vendor_app.endpoints.event import ns as ticket_event_namespace
+from api.ticket_vendor_app.endpoints.buyer_payment_method import ns as ticket_payment_method_namespace
+from api.ticket_vendor_app.endpoints.ticket import ns as ticket_ticket_namespace
 from api.config import api
 from database import db, reset_database
 import settings
 
 app = Flask(__name__)
-
-# logging_conf_path = os.path.normpath(os.path.join(os.path.dirname(__file__), '../logging.conf'))
-# logging.config.fileConfig(logging_conf_path)
+logging_conf_path = os.path.normpath(os.path.join(os.path.dirname(__file__), './logging.conf'))
+logging.config.fileConfig(logging_conf_path)
 log = logging.getLogger(__name__)
 
 def configure_app(flask_app):
@@ -29,6 +29,7 @@ def configure_app(flask_app):
     flask_app.config['RESTPLUS_VALIDATE'] = settings.RESTPLUS_VALIDATE
     flask_app.config['RESTPLUS_MASK_SWAGGER'] = settings.RESTPLUS_MASK_SWAGGER
     flask_app.config['ERROR_404_HELP'] = settings.RESTPLUS_ERROR_404_HELP
+    flask_app.config['BUNDLE_ERRORS'] = True
 
 def initialize_app(flask_app):
     """ Initialize app and flask configuration """
@@ -45,12 +46,15 @@ def initialize_app(flask_app):
 
     flask_app.register_blueprint(blueprint)
     db.init_app(flask_app)
-    reset_database()
 
 def main():
     initialize_app(app)
-    log.info('Starting app...')
-    api.run(debug=True)
+    # with app.app_context():
+    #     reset_database()
+
+    log.info('Starting development server at http://{}/api/'.format(app.config['SERVER_NAME']))
+    app.run(debug=settings.FLASK_DEBUG)
+
 
 if __name__ == '__main__':
     main()
