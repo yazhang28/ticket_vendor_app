@@ -162,26 +162,27 @@ class City(db.Model):
 
 class Event(db.Model):
     """ event Entity """
-    id = db.Column(db.BIGINT, primary_key=True)
+    event_id = db.Column(db.BIGINT, primary_key=True, autoincrement=False)
     date = db.Column(db.DATE, nullable=False)
-    time = db.Column(db.TIME, nullable=False)
+    city_txt = db.Column(db.VARCHAR(100), nullable=False)
     city_id = db.Column(db.BIGINT, db.ForeignKey('city.id'), nullable=False)
     city = db.relationship('City', backref=backref('event', uselist=False))
 
-    def __init__(self, date: datetime, time, city_id: int):
+    def __init__(self, event_id: int, date: datetime, city_txt: str, city_id: int):
+        self.event_id = event_id
         self.date = date,
-        self.time = time,
+        self.city_txt = city_txt
         self.city_id = city_id
 
     def __repr__(self):
-        return 'Event(id=%r, date=%r, time=%r, city_id=%r)'\
-               % (self.id, self.date, self.time, self.city_id)
+        return 'Event(event_id=%r, date=%r, city_txt=%r, city_id=%r)'\
+               % (self.event_id, self.date, self.city_txt, self.city_id)
 
 class Ticket(db.Model):
     """ ticket Entity """
     id = db.Column(db.BIGINT, primary_key=True)
 
-    event_id = db.Column(db.BIGINT, db.ForeignKey('event.id'), nullable=False)
+    event_id = db.Column(db.BIGINT, db.ForeignKey('event.event_id'), nullable=False)
     event = db.relationship('Event', backref='ticket')
 
     buyer_id = db.Column(db.BIGINT, db.ForeignKey('buyer.id'), nullable=True)

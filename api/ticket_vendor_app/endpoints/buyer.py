@@ -53,11 +53,11 @@ class BuyerCollection(Resource):
             api.abort(400)
 
 @ns.route('/<int:id>')
-@api.response(404, 'buyer not found.')
+@api.response(404, 'Bad Request')
 class BuyerItem(Resource):
     """ End points for ticket_vendor_app/buyer/id """
 
-    @api.expect(BuyerParser.post_args)
+    @api.marshal_with(post_payload)
     def get(self, id):
         """ Return buyer by Id """
 
@@ -65,7 +65,7 @@ class BuyerItem(Resource):
         log.debug(f'SELECT buyer by id :: {id}, {repr(result)}')
         return result
 
-    @api.expect(BuyerParser.post_args)
+    @api.marshal_with(post_payload)
     @api.response(200, "Request Successful")
     def put(self, id):
         """ Update existing buyer - out of scope """

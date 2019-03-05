@@ -52,6 +52,5 @@ class CityItem(Resource):
     @api.marshal_with(post_payload)
     def get(self, id):
         """ Return city by Id """
-
-        city_domain.get_city(id)
+        return city_domain.get_city(id), 200
 

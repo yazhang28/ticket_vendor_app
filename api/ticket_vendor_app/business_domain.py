@@ -2,6 +2,7 @@
 # coding=utf-8
 
 """ Domain logic """
+from datetime import datetime
 import logging
 from database import db
 from database.models import Buyer, BuyerReferralType, City, Event, Ticket, BuyerPaymentMethod
@@ -56,7 +57,6 @@ class BuyerReferralTypeDomain:
 
         log.debug(f'checking if already exists in buyer_referral_type :: parsed data :: {data}')
         data = data['type'].lower()
-
         buyer_referral_type = BuyerReferralType.query. \
             filter_by(type=data).first()
 
@@ -107,7 +107,82 @@ class CityDomain:
         log.debug(f'city already exists!')
         return None
 
-    def get_city(self, data):
+    def get_city(self, id: int):
         """ Returns city by id """
-        result = City.query.get_or_404(data)
-        log.debug(f'SELECT City by id :: {data}, {repr(result)}')
+        result = City.query.get_or_404(id)
+        log.debug(f'SELECT City by id :: {id}, {repr(result)}')
+        return result
+
+
+class EventDomain:
+    """ Domain logic for buyer Entity """
+
+    def create_event(self, data):
+        """ Create new buyer and post to DB """
+
+        # check if buyer_referral_type exists
+        city_id = CityDomain().transform_city(data=['city_txt'])
+
+        if city_id is None:
+            CityDomain.create_city(data['city_txt'])
+
+        event = Event(date=data['date'],
+                      time=data['time'],
+                      city_txt=data['city_txt'],
+                      city_id=city_id)
+
+        log.debug(f'INSERT to buyer Entity :: {repr(event)}')
+        db.session.add(event)
+        db.session.commit()
+        return event
+
+    def get_event(self, id: int):
+        """ Returns event by id """
+
+        result = Event.query.get_or_404(id)
+        log.debug(f'SELECT Event by id :: {id}, {repr(result)}')
+        return result
+
+    def get_event_batch(self, city: str, date: datetime = None):
+        """ Returns event by city, narrow down by date (optional) """
+
+        # retrieve city id from city entity
+        id = CityDomain.transform_city(city)
+
+        if id:
+            subquery = Event.query.filter_by(city_id=id)
+
+            if subquery:
+                if not date:
+                    log.debug(f'SELECT event :: {repr(subquery)} by city :: {city} :: id :: {id}')
+                    return subquery.all()
+
+                current_date = datetime.utcnow().date()
+                result = Event.query.filter(Event.date.between(date, current_date).in_(subquery))
+
+                log.debug(f'SELECT event :: {repr(result)} by city :: {city} :: id :: {id} :: in dates :: {current_date} - {date}')
+                return result
+            log.debug(f'No events found for city :: {city} :: id :: {id}')
+        else:
+            log.debug(f'City has not been added yet!')
+        return None
+
+class TicketDomain:
+    """ Domain logic for ticket Entity """
+
+    def create_ticket(self, data):
+        """ Create new ticket and post to DB """
+
+        """ update event table """
+        """ post to ticket table """
+
+    def update_ticket(self, data):
+        """ Update existing event when purchased """
+
+        """ get event """
+
+        """ update in db """
+
+        """ return ticket """
+        raise NotImplementedError
+
