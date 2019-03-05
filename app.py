@@ -6,7 +6,7 @@ import os
 import logging.config
 from flask import Flask, Blueprint
 from api.ticket_vendor_app.endpoints.buyer import ns as ticket_vendor_buyer_namespace
-from api.ticket_vendor_app.endpoints.buyer_referral import ns as ticket_vendor_buyer_referral_type_namespace
+from api.ticket_vendor_app.endpoints.buyer_referral import ns as ticket_vendor_buyer_referral_namespace
 from api.ticket_vendor_app.endpoints.city import ns as ticket_vendor_city_namespace
 from api.ticket_vendor_app.endpoints.event import ns as ticket_vendor_event_namespace
 from api.ticket_vendor_app.endpoints.ticket import ns as ticket_vendor_ticket_namespace
@@ -37,7 +37,7 @@ def initialize_app(flask_app):
     api.init_app(blueprint)
 
     api.add_namespace(ticket_vendor_buyer_namespace)
-    api.add_namespace(ticket_vendor_buyer_referral_type_namespace)
+    api.add_namespace(ticket_vendor_buyer_referral_namespace)
     api.add_namespace(ticket_vendor_city_namespace)
     api.add_namespace(ticket_vendor_event_namespace)
     api.add_namespace(ticket_vendor_ticket_namespace)

@@ -1,9 +1,9 @@
 /* ===================== positve passed test ===================== */
-INSERT INTO buyer_referral_type (type)
+INSERT INTO buyer_referral (type)
 VALUES ('Internal'),
        ('Other');
 
-INSERT INTO buyer (email_address, buyer_referral_type_id, first_name, last_name, phone_number)
+INSERT INTO buyer (email_address, buyer_referral_id, first_name, last_name, phone_number)
 VALUES ('test@testing.com',1,'joe','smith','234'),
        ('apple@orange.com',1,'apple','orange','1');
 

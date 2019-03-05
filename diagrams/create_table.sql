@@ -1,19 +1,15 @@
-/* ------- buyer_referral_type ------- */
-  CREATE TABLE IF NOT EXISTS buyer_referral_type (
+/* ------- buyer_referral ------- */
+  CREATE TABLE IF NOT EXISTS buyer_referral (
     id SERIAL,
     type VARCHAR(50) UNIQUE NOT NULL,
     PRIMARY KEY (id)
   );
 
-  INSERT INTO buyer_referral_source (type)
-    VALUES ('Internal'),
-           ('Other');
-
 /* ------- buyer ------- */
   CREATE TABLE IF NOT EXISTS buyer (
     id SERIAL,
-    buyer_referral_type_id BIGINT NOT NULL REFERENCES buyer_referral_type,
-    buyer_referral_type_txt VARCHAR(50) NOT NULL,
+    buyer_referral_id BIGINT NOT NULL REFERENCES buyer_referral,
+    buyer_referral_txt VARCHAR(50) NOT NULL,
     email_address VARCHAR(50) UNIQUE CONSTRAINT email_address CHECK (email_address ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9-]+[.][A-Za-z]+$'),
     first_name VARCHAR(50) NOT NULL CONSTRAINT first_name CHECK (first_name ~* '[a-zA-Z]+'),
     last_name VARCHAR(50) NOT NULL CONSTRAINT last_name CHECK (last_name ~* '[a-zA-Z]+'),

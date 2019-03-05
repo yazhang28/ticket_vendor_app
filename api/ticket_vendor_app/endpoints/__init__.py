@@ -3,7 +3,7 @@
 """ Ticket Vendor API Endpoints """
 
 # from .buyer import *
-# from .buyer_referral_type import *
+# from .buyer_referral import *
 # from .city import *
 # from .event import *
 # from .payment_method import *

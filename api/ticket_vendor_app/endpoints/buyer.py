@@ -45,11 +45,14 @@ class BuyerCollection(Resource):
     def post(self):
         """ Create new buyer (user) """
         parsed_args = BuyerParser.post_args.parse_args(request)
-        buyer = buyer_domain.create_buyer(parsed_args)
-        if buyer:
+
+        log.debug(f'checking if already exists in buyer :: parsed args :: {parsed_args}')
+        buyer = BuyerDomain.check_buyer(parsed_args['email_address'])
+        if not buyer:
+            buyer = buyer_domain.create_buyer(parsed_args)
             return buyer
-        elif buyer is None:
-            api.abort(400)
+        log.debug(f'buyer already exists!')
+        api.abort(400)
 
 @ns.route('/<int:id>')
 @api.response(200, 'Request Successful')
@@ -59,12 +62,9 @@ class BuyerItem(Resource):
 
     @api.marshal_with(post_payload)
     def get(self, id):
-        """ Return buyer by Id """
+        """ Return buyer by id """
 
         buyer = Buyer.query.get_or_404(id)
         log.debug(f'SELECT buyer by id :: {id}, {repr(buyer)}')
         return buyer
-
-
-
 

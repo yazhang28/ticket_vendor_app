@@ -16,30 +16,39 @@ class BuyerDomain:
     @staticmethod
     def create_buyer(data):
         """ Creates new buyer and post to DB """
-        log.debug(f'checking if already exists in buyer :: parsed args :: {data}')
 
-        # check if user exists
-        buyer = Buyer.query.filter_by(email_address=data['email_address']).first()
-        if not buyer:
+        # log.debug(f'checking if already exists in buyer :: parsed args :: {data}')
+        # buyer = Buyer.query.filter_by(email_address=data['email_address']).first()
+        # buyer = BuyerDomain.check_buyer(data['email_address'])
+        # if not buyer:
 
             # check if buyer_referral exists
-            buyer_referral_id = BuyerReferralDomain().\
-                transform_buyer_referral(data['buyer_referral_txt'])
+        buyer_referral_id = BuyerReferralDomain.\
+            transform_buyer_referral(data['buyer_referral_txt'])
 
-            if buyer_referral_id is None:
-                buyer_referral_id = BuyerReferralDomain.create_buyer_referral(data['buyer_referral_txt']).id
+        if buyer_referral_id is None:
+            buyer_referral_id = BuyerReferralDomain.create_buyer_referral(data['buyer_referral_txt']).id
 
-            buyer = Buyer(email_address=data["email_address"],
-                          first_name=data["first_name"],
-                          last_name=data["last_name"],
-                          buyer_referral_txt=data['buyer_referral_txt'],
-                          buyer_referral_id=buyer_referral_id)
-            log.debug(f'INSERT to buyer Entity :: {repr(buyer)}')
-            db.session.add(buyer)
-            db.session.commit()
-            return buyer
-        log.debug(f'buyer already exists!')
-        return None
+        buyer = Buyer(email_address=data["email_address"],
+                      first_name=data["first_name"],
+                      last_name=data["last_name"],
+                      buyer_referral_txt=data['buyer_referral_txt'],
+                      buyer_referral_id=buyer_referral_id)
+        log.debug(f'INSERT to buyer Entity :: {repr(buyer)}')
+        db.session.add(buyer)
+        db.session.commit()
+        return buyer
+        # log.debug(f'buyer already exists!')
+        # return None
+
+    @staticmethod
+    def check_buyer(data):
+        """ Check for existing buyer record in DB """
+
+        log.debug(f'checking if already exists in buyer :: parsed args :: {data}')
+        buyer = Buyer.query.filter_by(email_address=data).first()
+        log.debug(type(buyer))
+        return buyer
 
 #TODO: refactor Type domains
 class BuyerReferralDomain:
@@ -60,11 +69,9 @@ class BuyerReferralDomain:
         """ Creates new buyer_referral and post to DB """
 
         log.debug(f'checking if already exists in buyer_referral :: parsed data :: {data}')
-        data = data['type'].lower()
+        data = data.lower()
         buyer_referral = BuyerReferral.query. \
             filter_by(type=data).first()
-
-        # log.debug(f'checking buyer_referral :: {repr(buyer_referral)}')
 
         if not buyer_referral:
             buyer_referral = BuyerReferral(type=data)
@@ -128,7 +135,6 @@ class EventDomain:
     def create_event(data):
         """ Creates new buyer and post to DB """
 
-        # check if city exists
         log.debug(f'checking if already exists in event :: parsed data :: {data}')
 
         # check if event already exists
@@ -209,8 +215,6 @@ class TicketDomain:
         db.session.commit()
         return ticket
 
-        raise NotImplementedError
-
     @staticmethod
     def get_ticket(id: int):
         """ Returns ticket by event_id """
@@ -223,27 +227,34 @@ class TicketDomain:
     def update_ticket(id: int, data):
         """ Updates existing event when purchased """
 
-        # check if ticket exists
-        log.debug(f'checking if already ticket exists :: parsed data :: {data}')
-        ticket = Ticket.query.get_or_404(id)
+        log.debug(f'Checking if ticket exists and open for sale :: parsed data :: {data}')
+        ticket = Ticket.query.filter(Ticket.id == id, Ticket.sold != True)
+        # ticket = Ticket.query.get_or_404(id)
 
-        log.debug(f'Checking for buyer data :: {data}')
-        if 'buyer_id' not in data:
+        if Ticket is None:
+            log.debug(f'Ticket does not exist or has been sold!')
+            return None
+
+        log.debug(f'Checking for existing buyer data in payload :: {data}')
+        buyer = BuyerDomain.check_buyer(data['email_address'])
+        if buyer:
+            ticket.buyer_id = buyer
+            # ticket.buyer_id = data['buyer_id']
+        else:
             buyer_data = {'email_address': data['email_address'],
                           'first_name': data['first_name'],
                           'last_name': data['last_name'],
-                          'buyer_referral_txt': data['buyer_referral']
+                          'buyer_referral_txt': data['buyer_referral_txt']
                           }
             if 'phone_number' in data:
                 buyer_data['phone_number'] = data['phone_number']
             buyer_id = BuyerDomain().create_buyer(buyer_data).id
-
+            ticket.buyer_id = buyer_id
         if 'delivery_by_phone' in data:
             ticket.delivery_by_phone = data['delivery_by_phone']
         if 'delivery_by_email' in data:
             ticket.delivery_by_email = data['delivery_by_email']
 
-        ticket.buyer_id = buyer_id
         ticket.sold = data['sold']
         ticket.date_sold = datetime.utcnow()
 
