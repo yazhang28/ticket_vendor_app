@@ -5,12 +5,11 @@
 import os
 import logging.config
 from flask import Flask, Blueprint
-from api.ticket_vendor_app.endpoints.buyer import ns as ticket_buyer_namespace
-from api.ticket_vendor_app.endpoints.buyer_referral_type import ns as ticket_buyer_referral_type_namespace
-from api.ticket_vendor_app.endpoints.city import ns as ticket_city_namespace
-from api.ticket_vendor_app.endpoints.event import ns as ticket_event_namespace
-from api.ticket_vendor_app.endpoints.buyer_payment_method import ns as ticket_payment_method_namespace
-from api.ticket_vendor_app.endpoints.ticket import ns as ticket_ticket_namespace
+from api.ticket_vendor_app.endpoints.buyer import ns as ticket_vendor_buyer_namespace
+from api.ticket_vendor_app.endpoints.buyer_referral import ns as ticket_vendor_buyer_referral_type_namespace
+from api.ticket_vendor_app.endpoints.city import ns as ticket_vendor_city_namespace
+from api.ticket_vendor_app.endpoints.event import ns as ticket_vendor_event_namespace
+from api.ticket_vendor_app.endpoints.ticket import ns as ticket_vendor_ticket_namespace
 from api.config import api
 from database import db, reset_database
 import settings
@@ -37,12 +36,11 @@ def initialize_app(flask_app):
     blueprint = Blueprint('api', __name__, url_prefix='/api')
     api.init_app(blueprint)
 
-    api.add_namespace(ticket_buyer_namespace)
-    api.add_namespace(ticket_buyer_referral_type_namespace)
-    api.add_namespace(ticket_city_namespace)
-    api.add_namespace(ticket_event_namespace)
-    api.add_namespace(ticket_payment_method_namespace)
-    api.add_namespace(ticket_ticket_namespace)
+    api.add_namespace(ticket_vendor_buyer_namespace)
+    api.add_namespace(ticket_vendor_buyer_referral_type_namespace)
+    api.add_namespace(ticket_vendor_city_namespace)
+    api.add_namespace(ticket_vendor_event_namespace)
+    api.add_namespace(ticket_vendor_ticket_namespace)
 
     flask_app.register_blueprint(blueprint)
     db.init_app(flask_app)

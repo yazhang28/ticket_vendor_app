@@ -5,7 +5,7 @@
     PRIMARY KEY (id)
   );
 
-  INSERT INTO buyer_referral_type (type)
+  INSERT INTO buyer_referral_source (type)
     VALUES ('Internal'),
            ('Other');
 
@@ -22,23 +22,6 @@
     PRIMARY KEY (id)
   );
 
-/* ------- buyer_payment_method ------- */
-  CREATE TABLE IF NOT EXISTS buyer_payment_method (
-    id SERIAL,
-    buyer_id INT NOT NULL REFERENCES buyer,
-    billing_address VARCHAR(100) CONSTRAINT billing_address CHECK (billing_address ~ '[\sA-Za-z0-9.]+'),
-    city VARCHAR(100),
-    postal_code VARCHAR(10) CONSTRAINT postal_code CHECK (postal_code ~ '[0-9]'),
-    credit_card_number VARCHAR(20) UNIQUE,
-    security_code VARCHAR(4) CONSTRAINT security_code CHECK (security_code ~ '[0-9]'),
-    month_exp INT CONSTRAINT month_exp CHECK (month_exp <=12 AND month_exp >= 1),
-    year_exp INT CONSTRAINT year_exp CHECK (year_exp >= extract(YEAR FROM CURRENT_DATE)::INT),
-    internal_payment_method BOOLEAN NOT NULL DEFAULT FALSE,
-    external_payment_method BOOLEAN NOT NULL DEFAULT FALSE,
-    active BOOLEAN NOT NULL DEFAULT TRUE,
-    PRIMARY KEY (id)
-  );
-
 /* ------- city ------- */
   CREATE TABLE IF NOT EXISTS city (
     id SERIAL,
@@ -47,12 +30,13 @@
   );
 
 /* ------- event ------- */
-  CREATE TABLE IF NOT EXISTS event (
-    id SERIAL,
+  CREATE TABLE IF NOT EXISTS test (
+    event_id BIGINT,
     date DATE NOT NULL,
     time TIME WITH TIME ZONE NOT NULL,
+    city_txt VARCHAR(50) NOT NULL,
     city_type_id INT NOT NULL REFERENCES city,
-    PRIMARY KEY (id)
+    PRIMARY KEY (event_id)
   );
 
 /* ------- ticket ------- */

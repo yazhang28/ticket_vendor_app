@@ -5,6 +5,6 @@ db = SQLAlchemy()
 
 def reset_database():
     """ Do a clean creation of the DB Schema """
-    from .models import Buyer, BuyerReferralType, BuyerPaymentMethod, City, Event, Ticket
+    from .models import Buyer, BuyerReferral, BuyerPaymentMethod, City, Event, Ticket
     db.drop_all()
     db.create_all()

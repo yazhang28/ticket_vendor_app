@@ -13,30 +13,29 @@ from database import db
 
 log = logging.getLogger(__name__)
 buyer_domain = BuyerDomain()
-ns = api.namespace('ticket_vendor_app/buyer', description='Operations related to ticket_vendor_app: buyer entity')
+ns = api.namespace('ticket-vendor/buyer', description='Operations related to ticket_vendor_app: Buyer entity')
 
 post_payload = api.model('buyer', {
-    'id': fields.Integer(readOnly=True, description="Unique identifier of a buyer"),
+    'id': fields.Integer(readOnly=True, description="Unique identifier of a Buyer"),
     'email_address': fields.String(required=True,
                                    pattern='^[A-Za-z0-9._%-]+@[A-Za-z0-9-]+[.][A-Za-z]+$',
                                    max_length=50),
     'first_name': fields.String(required=True, pattern='[a-zA-Z]+', max_length=100),
     'last_name': fields.String(required=True, pattern='[a-zA-Z]+', max_length=100),
     'phone_number': fields.String(required=False, max_length=50),
-    'buyer_referral_type_txt': fields.String(required=True, max_length=50),
-    'buyer_referral_type_id': fields.Integer(required=False),
+    'buyer_referral_txt': fields.String(required=True, max_length=50),
+    'buyer_referral_id': fields.Integer(readOnly=True, required=False),
     'active': fields.Boolean(default=True, required=False)
 })
 
 @ns.route('/')
 @api.response(400, "Bad Request")
 class BuyerCollection(Resource):
-    """ End points ticket_vendor_app/buyer """
+    """ End points ticket-vendor/buyer """
 
     @api.marshal_list_with(post_payload)
-    # @api.expect(BuyerSerializer.post_payload)
     def get(self):
-        """ Returns list of buyers (users) """
+        """ Returns list of all buyers (users) """
         buyers = Buyer.query.all()
         return buyers
 
@@ -48,28 +47,24 @@ class BuyerCollection(Resource):
         parsed_args = BuyerParser.post_args.parse_args(request)
         buyer = buyer_domain.create_buyer(parsed_args)
         if buyer:
-            return buyer, 201
+            return buyer
         elif buyer is None:
             api.abort(400)
 
 @ns.route('/<int:id>')
+@api.response(200, 'Request Successful')
 @api.response(404, 'Bad Request')
 class BuyerItem(Resource):
-    """ End points for ticket_vendor_app/buyer/id """
+    """ End points for ticket-vendor/buyer/id """
 
     @api.marshal_with(post_payload)
     def get(self, id):
         """ Return buyer by Id """
 
-        result = Buyer.query.get_or_404(id)
-        log.debug(f'SELECT buyer by id :: {id}, {repr(result)}')
-        return result
+        buyer = Buyer.query.get_or_404(id)
+        log.debug(f'SELECT buyer by id :: {id}, {repr(buyer)}')
+        return buyer
 
-    @api.marshal_with(post_payload)
-    @api.response(200, "Request Successful")
-    def put(self, id):
-        """ Update existing buyer - out of scope """
-        raise NotImplementedError
 
 
 
