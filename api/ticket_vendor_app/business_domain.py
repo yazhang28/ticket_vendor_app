@@ -5,6 +5,9 @@
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import logging
+import sqlalchemy
+from sqlalchemy import inspect
+
 from database import db
 from database.models import Buyer, BuyerReferral, City, Event, Ticket
 
@@ -16,13 +19,6 @@ class BuyerDomain:
     @staticmethod
     def create_buyer(data):
         """ Creates new buyer and post to DB """
-
-        # log.debug(f'checking if already exists in buyer :: parsed args :: {data}')
-        # buyer = Buyer.query.filter_by(email_address=data['email_address']).first()
-        # buyer = BuyerDomain.check_buyer(data['email_address'])
-        # if not buyer:
-
-            # check if buyer_referral exists
         buyer_referral_id = BuyerReferralDomain.\
             transform_buyer_referral(data['buyer_referral_txt'])
 
@@ -38,17 +34,16 @@ class BuyerDomain:
         db.session.add(buyer)
         db.session.commit()
         return buyer
-        # log.debug(f'buyer already exists!')
-        # return None
 
     @staticmethod
     def check_buyer(data):
         """ Check for existing buyer record in DB """
 
-        log.debug(f'checking if already exists in buyer :: parsed args :: {data}')
+        log.debug(f'checking for existing buyer record :: parsed args :: {data}')
         buyer = Buyer.query.filter_by(email_address=data).first()
-        log.debug(type(buyer))
-        return buyer
+
+        log.debug(repr(buyer))
+        return buyer, buyer.id
 
 #TODO: refactor Type domains
 class BuyerReferralDomain:
@@ -112,7 +107,6 @@ class CityDomain:
 
         if not city:
             city = City(name=data)
-            # log.debug(f'adding to city Entity :: {buyer_referral.type}')
             log.debug(f'INSERT to city Entity :: {repr(city)}')
             db.session.add(city)
             db.session.commit()
@@ -136,10 +130,9 @@ class EventDomain:
         """ Creates new buyer and post to DB """
 
         log.debug(f'checking if already exists in event :: parsed data :: {data}')
-
-        # check if event already exists
         id = data['event_id']
         event = Event.query.filter_by(event_id=id).first()
+
         if not event:
             city_id = CityDomain().transform_city(data['city_txt'])
 
@@ -199,6 +192,10 @@ class EventDomain:
 
 class TicketDomain:
     """ Domain logic for ticket Entity """
+    @staticmethod
+    def object_as_dict(obj):
+        return {c.key: getattr(obj, c.key)
+                for c in inspect(obj).mapper.column_attrs}
 
     @staticmethod
     def create_ticket(data):
@@ -226,21 +223,21 @@ class TicketDomain:
     @staticmethod
     def update_ticket(id: int, data):
         """ Updates existing event when purchased """
+        # dict_ticket_result = [u.__dict__ for u in ticket.all()]
 
         log.debug(f'Checking if ticket exists and open for sale :: parsed data :: {data}')
-        ticket = Ticket.query.filter(Ticket.id == id, Ticket.sold != True)
-        # ticket = Ticket.query.get_or_404(id)
+        ticket = Ticket.query.filter(Ticket.id == id).filter(Ticket.sold == False).first()
 
-        if Ticket is None:
+        if not ticket:
             log.debug(f'Ticket does not exist or has been sold!')
             return None
 
-        log.debug(f'Checking for existing buyer data in payload :: {data}')
-        buyer = BuyerDomain.check_buyer(data['email_address'])
+        buyer, buyer_id = BuyerDomain.check_buyer(data['email_address'])
         if buyer:
-            ticket.buyer_id = buyer
-            # ticket.buyer_id = data['buyer_id']
+            ticket.buyer_id = buyer_id
+
         else:
+            # Create new buyer record
             buyer_data = {'email_address': data['email_address'],
                           'first_name': data['first_name'],
                           'last_name': data['last_name'],
@@ -248,13 +245,14 @@ class TicketDomain:
                           }
             if 'phone_number' in data:
                 buyer_data['phone_number'] = data['phone_number']
-            buyer_id = BuyerDomain().create_buyer(buyer_data).id
-            ticket.buyer_id = buyer_id
-        if 'delivery_by_phone' in data:
-            ticket.delivery_by_phone = data['delivery_by_phone']
-        if 'delivery_by_email' in data:
-            ticket.delivery_by_email = data['delivery_by_email']
 
+            buyer_id = BuyerDomain().create_buyer(buyer_data).id
+
+            # update ticket record
+            ticket.buyer_id = buyer_id
+
+        ticket.delivery_by_phone = data['delivery_by_phone']
+        ticket.delivery_by_email = data['delivery_by_email']
         ticket.sold = data['sold']
         ticket.date_sold = datetime.utcnow()
 

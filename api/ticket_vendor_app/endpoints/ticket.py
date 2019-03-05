@@ -40,8 +40,8 @@ put_payload = api.model('ticket', {
     'price': fields.Integer(require=False, min=1),
     'sold': fields.Boolean(required=True, default=True),
     'date_sold': fields.DateTime(required=False),
-    'delivery_by_mail': fields.Boolean(required=False, description='Method of ticket delivery'),
-    'delivery_by_phone': fields.Boolean(required=False, description='Method of ticket delivery'),
+    'delivery_by_email': fields.Boolean(required=True, default=False, description='Method of ticket delivery'),
+    'delivery_by_phone': fields.Boolean(required=True, default=False, description='Method of ticket delivery'),
     'buyer_id': fields.Integer(
         required=False,
         description='Unique identifier of the purchaser associated with this ticket'),
@@ -95,7 +95,7 @@ class TicketItem(Resource):
 class TicketPurchase(Resource):
     """ End points for ticket-vendor/ticket/id/buyer_id"""
 
-    @api.marshal_with(put_payload)
+    @api.marshal_with(post_payload)
     @api.expect(put_payload)
     def put(self, id):
         """ Update event ticket with purchase details """

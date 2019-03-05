@@ -43,7 +43,7 @@ class EventParser:
 class TicketParser:
     """ Class of parameter parsers for the ticket Entity """
     post_args = reqparse.RequestParser()
-    # post_args.add_argument('event_id', required=True, type=int)
+    post_args.add_argument('event_id', required=True, type=int)
     post_args.add_argument('row', required=True, type=str)
     post_args.add_argument('section', required=True, type=int)
     post_args.add_argument('quantity', required=True, type=int)
@@ -51,5 +51,7 @@ class TicketParser:
 
     buy_put_args = BuyerParser.post_args.copy()
     buy_put_args.add_argument('sold', required=True, type=bool)
+    buy_put_args.add_argument('delivery_by_phone', required=True, type=bool)
+    buy_put_args.add_argument('delivery_by_email', required=True, type=bool)
 
 
