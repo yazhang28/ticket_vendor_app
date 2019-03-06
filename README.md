@@ -11,5 +11,5 @@ connected to a PostGreSQL database hosted on AWS RDS.  This Flask application is
 - The app takes care of generating the database models as well as table creation from scratch.
 
 ### Running the app in the docker container 
-1. While in the main directory, build the docker image with the command `sh scripts/build.sh`
-2. `sh scripts/run.sh` will start the app on port 5000.  Access the Swagger UI page with http://0.0.0.0:5000/api/
+1. While in the main directory, build the docker image with the command `sh run/build.sh`
+2. `sh run/run.sh` will start the app on port 5000.  Access the Swagger UI page with http://0.0.0.0:5000/api/
