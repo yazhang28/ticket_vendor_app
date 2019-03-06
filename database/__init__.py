@@ -1,5 +1,5 @@
 # coding=utf-8
-""" TODO: add docstring """
+""" database package """
 from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 

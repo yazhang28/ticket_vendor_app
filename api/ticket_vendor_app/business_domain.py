@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.7
+#!/usr/bin/env python3.7.7
 # coding=utf-8
 
 """ Domain logic """
@@ -112,17 +112,6 @@ class CityDomain:
             log.debug(f'city record found :: {repr(city)}')
             return city.id
         return None
-
-    # @staticmethod
-    # def transform_city(data: str) -> int:
-    #     """ Transform incoming city_id to match DB schema """
-    #
-    #     log.debug(f'transforming city :: {data}')
-    #
-    #     mapping = {city.name: city.id for city in City.query.all()}
-    #     log.debug(f'city mapping :: {mapping}')
-    #
-    #     return mapping[data] if data in mapping else None
 
     @staticmethod
     def create_city(data: Dict):

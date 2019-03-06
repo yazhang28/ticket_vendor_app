@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.7
 # coding=utf-8
 
 """ BuyerReferral API Endpoints """
@@ -13,7 +13,6 @@ from database.models import BuyerReferral
 
 log = logging.getLogger(__name__)
 ns = api.namespace('ticket-vendor/buyer-referral', description='Operations related to ticket_vendor_app: BuyerReferral entity')
-# buyer_referral_domain = BuyerReferralDomain
 
 @ns.route('/')
 @api.response(400, "Bad Request")

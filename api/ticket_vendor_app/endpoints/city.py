@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.7
 # coding=utf-8
 
 """ City API Endpoints """
@@ -14,11 +14,6 @@ from database.models import City
 log = logging.getLogger(__name__)
 ns = api.namespace('ticket-vendor/city', description='Operations related to City entity')
 city_domain = CityDomain()
-
-# post_payload = api.model('city', {
-#     'id': fields.Integer(readOnly=True, description="Unique identifier of a City"),
-#     'name': fields.String(required=True, max_length=50, description='vendor referral source used by City')
-# })
 
 @ns.route('/')
 @api.response(400, "Bad Request")

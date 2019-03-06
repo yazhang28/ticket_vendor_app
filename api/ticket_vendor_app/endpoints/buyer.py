@@ -1,16 +1,15 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.7
 # coding=utf-8
 
 """ Buyer Endpoints """
 import logging
 from flask import request
-from flask_restplus import Resource, fields
+from flask_restplus import Resource
 from api.config import api
 from api.ticket_vendor_app.business_domain import BuyerDomain
 from api.ticket_vendor_app.endpoints.parsers import BuyerParser
 from api.ticket_vendor_app.endpoints.serializers import BuyerSerializer
 from database.models import Buyer
-from database import db
 
 log = logging.getLogger(__name__)
 buyer_domain = BuyerDomain()

@@ -1,5 +1,5 @@
+#!/usr/bin/env python3.7
 # coding=utf-8
-#!/usr/bin/env python3
 
 """ Class of DB entity models """
 from datetime import datetime
