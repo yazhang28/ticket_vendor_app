@@ -12,7 +12,7 @@ from api.ticket_vendor_app.endpoints.serializers import BuyerSerializer
 from database.models import Buyer
 
 log = logging.getLogger(__name__)
-buyer_domain = BuyerDomain()
+# buyer_domain = BuyerDomain()
 ns = api.namespace('ticket-vendor/buyer', description='Operations related to ticket_vendor_app: Buyer entity')
 
 @ns.route('/')
@@ -30,9 +30,12 @@ class BuyerCollection(Resource):
     @api.expect(BuyerSerializer.post_payload)
     @api.marshal_with(BuyerSerializer.payload)
     def post(self):
-        """ Create new buyer (user) """
+        """ Create new buyer (user) and posts to the
+            buyer_referral entity the source does not yet exist in the DB
+        """
+
         parsed_args = BuyerParser.post_args.parse_args(request)
-        buyer = buyer_domain.create_buyer(parsed_args)
+        buyer = BuyerDomain.create_buyer(parsed_args)
         if buyer:
             return buyer
         api.abort(400, message='buyer already exists in the database')

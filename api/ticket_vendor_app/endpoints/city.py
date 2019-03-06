@@ -13,7 +13,7 @@ from database.models import City
 
 log = logging.getLogger(__name__)
 ns = api.namespace('ticket-vendor/city', description='Operations related to City entity')
-city_domain = CityDomain()
+# city_domain = CityDomain()
 
 @ns.route('/')
 @api.response(400, "Bad Request")
@@ -34,7 +34,7 @@ class CityCollection(Resource):
         """ Creates new event city """
 
         parsed_args = CityParser.args.parse_args(request)
-        city = city_domain.create_city(parsed_args)
+        city = CityDomain.create_city(parsed_args)
         if city:
             return city
         api.abort(404, message='city already exists in the database')
@@ -48,5 +48,5 @@ class CityItem(Resource):
     @api.marshal_with(CitySerializer.payload)
     def get(self, id):
         """ Return event city by id """
-        return city_domain.get_city(id)
+        return CityDomain.get_city(id)
 

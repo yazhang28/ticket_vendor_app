@@ -80,7 +80,7 @@ class TicketSerializer:
         'price': fields.Integer(required=True, min=1),
     })
 
-    put_payload = api.model('Ticket put', {
+    put_payload = api.model('Ticket PUT', {
         'sold': fields.Boolean(required=True, default=False),
         'delivery_by_email': fields.Boolean(default=False, description='Method of ticket delivery'),
         'delivery_by_phone': fields.Boolean(default=False, description='Method of ticket delivery'),

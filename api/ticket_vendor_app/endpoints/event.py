@@ -12,7 +12,7 @@ from api.ticket_vendor_app.endpoints.serializers import EventSerializer
 from database.models import Event
 
 log = logging.getLogger(__name__)
-event_domain = EventDomain()
+# event_domain = EventDomain()
 ns = api.namespace('ticket-vendor/event', description='Operations related to ticket_vendor_app Event entity')
 
 @ns.route('/')
@@ -31,11 +31,13 @@ class EventCollection(Resource):
     @api.expect(EventSerializer.post_payload)
     @api.marshal_with(EventSerializer.payload)
     def post(self):
-        """ Create new event """
+        """ Creates new event and posts to the city entity table
+            if event city is not present in the DB
+        """
 
         log.debug(request)
         parsed_args = EventParser.post_args.parse_args(request)
-        event = event_domain.create_event(parsed_args)
+        event = EventDomain.create_event(parsed_args)
         if event:
             return event
         elif event is None:
@@ -51,7 +53,7 @@ class EventItem(Resource):
     def get(self, city_txt, month_interval):
         """ Return events by city and month interval """
 
-        events = event_domain.get_event_batch(city_txt, month_interval)
+        events = EventDomain.get_event_batch(city_txt, month_interval)
         log.debug(f'SELECT events by city :: {city_txt} :: between now and {month_interval} month(s) :: {repr(events)}')
         return events
 

@@ -12,7 +12,7 @@ from api.ticket_vendor_app.endpoints.serializers import TicketSerializer
 from database.models import Ticket
 
 log = logging.getLogger(__name__)
-ticket_domain = TicketDomain()
+# ticket_domain = TicketDomain()
 ns = api.namespace('ticket-vendor/ticket',
                    description='Operations related to ticket_vendor_app ticket_vendor_app entity')
 
@@ -24,6 +24,7 @@ class TicketCollection(Resource):
     @api.marshal_list_with(TicketSerializer.get_payload)
     def get(self):
         """ Returns list of all event tickets """
+
         ticket = Ticket.query.all()
         return ticket
 
@@ -32,8 +33,9 @@ class TicketCollection(Resource):
     @api.marshal_with(TicketSerializer.get_payload)
     def post(self):
         """ Create new event ticket """
+
         parsed_args = TicketParser.post_args.parse_args(request)
-        ticket = ticket_domain.create_ticket(parsed_args)
+        ticket = TicketDomain.create_ticket(parsed_args)
         if ticket:
             return ticket
         elif ticket is None:
@@ -47,8 +49,9 @@ class TicketItem(Resource):
 
     @api.marshal_with(TicketSerializer.get_payload)
     def get(self, event_id, quantity):
-        """ Return event tickets associated to an event id """
-        ticket = ticket_domain.get_ticket(event_id, quantity)
+        """ Return "best value" tickets for an event that also satisfies specified quantity """
+        log.debug('herllo')
+        ticket = TicketDomain.get_ticket(event_id, quantity)
         return ticket
 
 @ns.route('/<int:id>/')
@@ -61,9 +64,10 @@ class TicketPurchase(Resource):
     @api.expect(TicketSerializer.put_payload)
     def put(self, id):
         """ Update event ticket with purchase details """
+
         parse_args = TicketParser.buy_put_args.parse_args()
         log.debug(parse_args)
-        ticket = ticket_domain.update_ticket(id, parse_args)
+        ticket = TicketDomain.update_ticket(id, parse_args)
         if ticket:
             return ticket
         elif ticket is None:

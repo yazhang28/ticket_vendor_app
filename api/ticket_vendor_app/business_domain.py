@@ -234,8 +234,16 @@ class TicketDomain:
     @staticmethod
     def get_ticket(id: int, quantity: int):
         """ Returns ticket by event_id """
-        subqry = db.session.query(func.min(Ticket.price)).filter(Ticket.event_id == id, Ticket.quantity == quantity)
-        result = db.session.query(Ticket).filter(Ticket.event_id == id, Ticket.quantity == quantity, Ticket.price == subqry)
+
+        log.debug(f'here :: {id}')
+        # subqry = db.session.query(func.min(Ticket.price)).filter(Ticket.event_id == id, Ticket.quantity == quantity).subquery()
+        # result = db.session.query(Ticket).filter(Ticket.event_id == id, Ticket.quantity == quantity, Ticket.price == subqry)
+
+        subquery = db.session.query(func.min(Ticket.price)).filter(Ticket.event_id == id,
+                                                                 Ticket.quantity == quantity).subquery()
+        log.debug(f'subquery :: {repr(subquery)}')
+        result = db.session.query(Ticket).filter(Ticket.event_id == id, Ticket.quantity == quantity,
+                                                 Ticket.price.in_(subquery))
 
         log.debug(f'SELECT ticket by event_id :: {id}, {repr(result)}')
         return result
