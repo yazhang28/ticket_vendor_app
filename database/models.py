@@ -113,8 +113,8 @@ class Ticket(db.Model):
     price = db.Column(db.INT, nullable=False)
     sold = db.Column(db.BOOLEAN, default=False, server_default='f', nullable=False)
     date_sold = db.Column(db.TIMESTAMP, nullable=True)
-    delivery_by_email = db.Column(db.BOOLEAN, default=False, nullable=False)
-    delivery_by_phone = db.Column(db.BOOLEAN, default=False, nullable=False)
+    delivery_by_email = db.Column(db.BOOLEAN, default=True, nullable=False)
+    delivery_by_phone = db.Column(db.BOOLEAN, default=True, nullable=False)
 
     def __init__(self,
                  event_id: int,

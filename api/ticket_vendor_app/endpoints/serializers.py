@@ -82,8 +82,8 @@ class TicketSerializer:
 
     put_payload = api.model('Ticket PUT', {
         'sold': fields.Boolean(required=True, default=False),
-        'delivery_by_email': fields.Boolean(default=False, description='Method of ticket delivery', required=True),
-        'delivery_by_phone': fields.Boolean(default=False, description='Method of ticket delivery', required=True),
+        'delivery_by_email': fields.Boolean(default=True, description='Method of ticket delivery', required=False),
+        'delivery_by_phone': fields.Boolean(default=True, description='Method of ticket delivery', required=False),
         'email_address': fields.String(required=True,
                                        pattern='^[A-Za-z0-9._%-]+@[A-Za-z0-9-]+[.][A-Za-z]+$',
                                        max_length=50),

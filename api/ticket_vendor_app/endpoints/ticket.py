@@ -64,7 +64,6 @@ class TicketPurchase(Resource):
         """ Update event ticket with purchase details """
 
         parse_args = TicketParser.buy_put_args.parse_args()
-        log.debug(parse_args)
         ticket = TicketDomain.update_ticket(id, parse_args)
         if ticket:
             return ticket
