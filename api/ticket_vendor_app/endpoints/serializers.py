@@ -80,21 +80,9 @@ class TicketSerializer:
         'price': fields.Integer(required=True, min=1),
     })
 
-    put_payload = api.inherit('Ticket PUT', BuyerSerializer.payload, {
-        'city_id': fields.Integer(readOnly=True, required=False, description='Id of city Event takes place in'),
+    put_payload = api.inherit('Ticket PUT', BuyerSerializer.post_payload, {
         'sold': fields.Boolean(required=True, default=False),
         'delivery_by_email': fields.Boolean(default=True, description='Method of ticket delivery', required=False),
         'delivery_by_phone': fields.Boolean(default=True, description='Method of ticket delivery', required=False),
         'buyer_referral_txt': fields.String(required=True, max_length=50)
     })
-    # put_payload = api.model('Ticket PUT', {
-    #     'sold': fields.Boolean(required=True, default=False),
-    #     'delivery_by_email': fields.Boolean(default=True, description='Method of ticket delivery', required=False),
-    #     'delivery_by_phone': fields.Boolean(default=True, description='Method of ticket delivery', required=False),
-    #     # 'email_address': fields.String(required=True,
-    #     #                                pattern='^[A-Za-z0-9._%-]+@[A-Za-z0-9-]+[.][A-Za-z]+$',
-    #     #                                max_length=50),
-    #     # 'first_name': fields.String(required=True, pattern='[a-zA-Z]+', max_length=100),
-    #     # 'last_name': fields.String(required=True, pattern='[a-zA-Z]+', max_length=100),
-    #     'buyer_referral_txt': fields.String(required=True, max_length=50)
-    # })
