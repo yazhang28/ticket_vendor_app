@@ -50,7 +50,6 @@ class TicketItem(Resource):
     @api.marshal_with(TicketSerializer.get_payload)
     def get(self, event_id, quantity):
         """ Return "best value" tickets for an event that also satisfies specified quantity """
-        log.debug('herllo')
         ticket = TicketDomain.get_ticket(event_id, quantity)
         return ticket
 

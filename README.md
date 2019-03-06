@@ -1,6 +1,6 @@
 # ticket_vendor_app
 Here is a RESTful API for a ticket vendor app written in:
-- Python 3.6
+- Python 3.7
 - Flask
 - Flask-RestPlus
 - SQLAlchemy
