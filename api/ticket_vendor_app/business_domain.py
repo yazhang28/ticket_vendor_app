@@ -186,6 +186,7 @@ class EventDomain:
         """ Returns event by city, narrow down by date (optional) """
 
         # retrieve city id from city entity
+        city = city.lower().replace(" ", "")
         id = CityDomain.check_city(city)
 
         if id:
