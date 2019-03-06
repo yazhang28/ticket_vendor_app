@@ -104,7 +104,7 @@ class CityDomain:
     @staticmethod
     def check_city(data: str) -> int:
         """ Checks for city record in DB by name """
-        
+
         city = City.query.filter_by(name=data).first()
 
         if city:
@@ -157,7 +157,7 @@ class EventDomain:
             log.debug(f'Event record already exists in the database :: {repr(event)}')
             return None
 
-        city_txt = data['city_txt']
+        city_txt = data['city_txt'].lower().replace(" ", "")
         city_id = CityDomain.check_city(city_txt)
 
         if city_id is None:
