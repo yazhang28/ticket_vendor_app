@@ -104,7 +104,6 @@ class CityDomain:
     @staticmethod
     def check_city(data: str) -> int:
         """ Checks for city record in DB by name """
-        data.lower().replace(" ", "")
         city = City.query.filter_by(name=data).first()
 
         if city:
@@ -157,6 +156,7 @@ class EventDomain:
             return None
 
         city_txt = data['city_txt'].lower().replace(" ", "")
+
         city_id = CityDomain.check_city(city_txt)
 
         if city_id is None:
@@ -165,7 +165,7 @@ class EventDomain:
 
         event = Event(event_id=data['event_id'],
                       date=data['date'],
-                      city_txt=data['city_txt'],
+                      city_txt=city_txt,
                       city_id=city_id)
 
         log.debug(f'INSERT to event Entity :: {repr(event)}')

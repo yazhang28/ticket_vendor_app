@@ -47,8 +47,8 @@ def initialize_app(flask_app):
 
 def main():
     initialize_app(app)
-    # with app.app_context():
-    #     reset_database()
+    with app.app_context():
+        reset_database()
 
     log.info('Starting development server at http://{}/api/'.format(app.config['SERVER_NAME']))
     app.run(debug=settings.FLASK_DEBUG)
