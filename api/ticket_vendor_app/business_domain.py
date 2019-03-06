@@ -2,11 +2,11 @@
 # coding=utf-8
 
 """ Domain logic """
+from typing import Dict
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import logging
-import sqlalchemy
-from sqlalchemy import inspect
+from sqlalchemy import func
 
 from database import db
 from database.models import Buyer, BuyerReferral, City, Event, Ticket
@@ -17,110 +17,142 @@ class BuyerDomain:
     """ Domain logic for buyer Entity """
 
     @staticmethod
-    def create_buyer(data):
+    def create_buyer(data: Dict):
         """ Creates new buyer and post to DB """
-        buyer_referral_id = BuyerReferralDomain.\
-            transform_buyer_referral(data['buyer_referral_txt'])
 
-        if buyer_referral_id is None:
-            buyer_referral_id = BuyerReferralDomain.create_buyer_referral(data['buyer_referral_txt']).id
+        buyer = BuyerDomain.check_buyer(data['email_address'])
+
+        if buyer:
+            log.debug(f'buyer record already exists in the database :: {repr(buyer)}')
+            return None
+
+        buyer_referral = BuyerReferralDomain.\
+            check_buyer_referral(data['buyer_referral_txt'])
+
+        if buyer_referral is None:
+            buyer_referral_id = BuyerReferralDomain.create_buyer_referral(
+                {'type': data['buyer_referral_txt']}).id
+        else:
+            buyer_referral_id = buyer_referral.id
 
         buyer = Buyer(email_address=data["email_address"],
                       first_name=data["first_name"],
                       last_name=data["last_name"],
                       buyer_referral_txt=data['buyer_referral_txt'],
                       buyer_referral_id=buyer_referral_id)
+
         log.debug(f'INSERT to buyer Entity :: {repr(buyer)}')
         db.session.add(buyer)
         db.session.commit()
         return buyer
 
     @staticmethod
-    def check_buyer(data):
-        """ Check for existing buyer record in DB """
+    def check_buyer(data: str):
+        """ Check for existing buyer record in DB by email_address """
 
         log.debug(f'checking for existing buyer record :: parsed args :: {data}')
         buyer = Buyer.query.filter_by(email_address=data).first()
 
-        log.debug(repr(buyer))
-        return buyer, buyer.id
+        log.debug(f'buyer record found :: {repr(buyer)}')
+        return buyer
 
 #TODO: refactor Type domains
 class BuyerReferralDomain:
     """ Domain logic for buyer_referral Entity """
 
     @staticmethod
-    def transform_buyer_referral(data: str) -> int:
-        """ Transform incoming buyer_referral_id to match DB schema """
-        log.debug(f'transforming buyer_referral :: {data}')
+    def check_buyer_referral(data: str):
+        """ Checks for buyer_referral record in DB by referral_type_txt """
 
-        mapping = {buyer_referral.type: buyer_referral.id for buyer_referral in BuyerReferral.query.all()}
-        log.debug(f'buyer_referral mapping :: {mapping}')
-
-        return mapping[data] if data in mapping else None
-
-    @staticmethod
-    def create_buyer_referral(data):
-        """ Creates new buyer_referral and post to DB """
-
-        log.debug(f'checking if already exists in buyer_referral :: parsed data :: {data}')
-        data = data.lower()
+        data = data.lower().replace(" ", "")
         buyer_referral = BuyerReferral.query. \
             filter_by(type=data).first()
 
-        if not buyer_referral:
-            buyer_referral = BuyerReferral(type=data)
-            log.debug(f'adding to buyer_referral :: {buyer_referral.type}')
-            db.session.add(buyer_referral)
-            db.session.commit()
-
-            log.debug(f'INSERT to buyer_referral Entity :: {repr(buyer_referral)}')
+        if buyer_referral:
+            log.debug(f'buyer_referral record found :: {repr(buyer_referral)}')
             return buyer_referral
-        log.debug(f'buyer_type_referral already exists!')
         return None
+
+    @staticmethod
+    def create_buyer_referral(data: Dict):
+        """ Creates new buyer_referral and post to DB
+            :param : data (format)
+                {'type': <buyer_referrral_txt>}
+        """
+
+        log.debug(f'checking if already exists in buyer_referral :: parsed data :: {data}')
+
+        data = data['type']
+        buyer_referral = BuyerReferralDomain.check_buyer_referral(data)
+
+        if buyer_referral:
+            log.debug(f'buyer_type_referral record already exists :: {repr(buyer_referral)}')
+            return None
+
+        buyer_referral = BuyerReferral(type=data)
+        log.debug(f'adding to buyer_referral :: {buyer_referral.type}')
+        db.session.add(buyer_referral)
+        db.session.commit()
+
+        log.debug(f'INSERT to buyer_referral Entity :: {repr(buyer_referral)}')
+        return buyer_referral
 
 #TODO: refactor Type domains
 class CityDomain:
     """ Domain logic for city Entity """
 
     @staticmethod
-    def transform_city(data: str) -> int:
-        """ Transform incoming city_id to match DB schema """
-        log.debug(f'transforming city :: {data}')
+    def check_city(data: str) -> int:
+        """ Checks for city record in DB by name """
 
-        mapping = {city.name: city.id for city in City.query.all()}
-        log.debug(f'city mapping :: {mapping}')
+        data = data.lower().replace(" ", "")
+        city = City.query.filter_by(name=data).first()
 
-        return mapping[data] if data in mapping else None
+        if city:
+            log.debug(f'city record found :: {repr(city)}')
+            return city.id
+        return None
+
+    # @staticmethod
+    # def transform_city(data: str) -> int:
+    #     """ Transform incoming city_id to match DB schema """
+    #
+    #     log.debug(f'transforming city :: {data}')
+    #
+    #     mapping = {city.name: city.id for city in City.query.all()}
+    #     log.debug(f'city mapping :: {mapping}')
+    #
+    #     return mapping[data] if data in mapping else None
 
     @staticmethod
-    def create_city(data):
-        """ Creates new city and post to DB """
+    def create_city(data: Dict):
+        """ Creates new city and post to DB
+            :param : data (format)
+                {'name': <name>}
+        """
 
-        log.debug(f'checking if already exists in city :: parsed data :: {data}')
-        data = data['name'].lower()
+        log.debug(f'Checking city record already exists in db :: parsed data :: {data}')
 
-        city = City.query. \
-            filter_by(name=data).first()
+        data = data['name']
+        city_id = CityDomain.check_city(data)
 
-        log.debug(f'checking city :: {repr(city)}')
+        if city_id:
+            log.debug(f'City record already exists in the database :: {repr(city_id)}')
+            return None
 
-        if not city:
-            city = City(name=data)
-            log.debug(f'INSERT to city Entity :: {repr(city)}')
-            db.session.add(city)
-            db.session.commit()
-            return city
-        log.debug(f'city already exists!')
-        return None
+        city = City(name=data)
+        log.debug(f'INSERT to city Entity :: {repr(city)}')
+        db.session.add(city)
+        db.session.commit()
+        return city
 
     @staticmethod
     def get_city(id: int):
         """ Returns city by id """
+
         result = City.query.get_or_404(id)
         log.debug(f'SELECT City by id :: {id}, {repr(result)}')
         return result
-
 
 class EventDomain:
     """ Domain logic for buyer Entity """
@@ -129,28 +161,30 @@ class EventDomain:
     def create_event(data):
         """ Creates new buyer and post to DB """
 
-        log.debug(f'checking if already exists in event :: parsed data :: {data}')
+        log.debug(f'Checking event record already exists in db :: parsed data :: {data}')
         id = data['event_id']
         event = Event.query.filter_by(event_id=id).first()
 
-        if not event:
-            city_id = CityDomain().transform_city(data['city_txt'])
+        if event:
+            log.debug(f'Event record already exists in the database :: {repr(event)}')
+            return None
 
-            if city_id is None:
-                city = {'name': data['city_txt']}
-                city_id = CityDomain().create_city(city).id
+        city_txt = data['city_txt']
+        city_id = CityDomain.check_city(city_txt)
 
-            event = Event(event_id=data['event_id'],
-                          date=data['date'],
-                          city_txt=data['city_txt'],
-                          city_id=city_id)
+        if city_id is None:
+            city = {'name': data['city_txt']}
+            city_id = CityDomain.create_city(city).id
 
-            log.debug(f'INSERT to event Entity :: {repr(event)}')
-            db.session.add(event)
-            db.session.commit()
-            return event
-        log.debug(f'Event already exists!')
-        return None
+        event = Event(event_id=data['event_id'],
+                      date=data['date'],
+                      city_txt=data['city_txt'],
+                      city_id=city_id)
+
+        log.debug(f'INSERT to event Entity :: {repr(event)}')
+        db.session.add(event)
+        db.session.commit()
+        return event
 
     @staticmethod
     def get_event(id: int):
@@ -165,7 +199,7 @@ class EventDomain:
         """ Returns event by city, narrow down by date (optional) """
 
         # retrieve city id from city entity
-        id = CityDomain.transform_city(city)
+        id = CityDomain.check_city(city)
 
         if id:
             subquery = Event.query.filter_by(city_id=id)
@@ -174,7 +208,7 @@ class EventDomain:
                 return subquery.all()
 
             current_date = datetime.utcnow().date()
-            future_date = current_date + relativedelta(months=+6)
+            future_date = current_date + relativedelta(months=month)
 
             result = Event.query \
                 .filter(Event.city_id == id) \
@@ -183,19 +217,15 @@ class EventDomain:
                 .all()
 
             if result:
-                log.debug(f'SELECT event :: {repr(result)} by city :: {city} :: in dates :: {current_date} - {future_date}')
+                log.debug(f'SELECT event :: {repr(result)} by city :: {city} :: in range :: {current_date} - {future_date}')
                 return result
             log.debug(f'No events found for city :: {city} in specified range :: {current_date} - {future_date}')
         else:
-            log.debug(f'City has not been added yet!')
+            log.debug(f'No event for this city has been added yet')
         return []
 
 class TicketDomain:
     """ Domain logic for ticket Entity """
-    @staticmethod
-    def object_as_dict(obj):
-        return {c.key: getattr(obj, c.key)
-                for c in inspect(obj).mapper.column_attrs}
 
     @staticmethod
     def create_ticket(data):
@@ -213,28 +243,28 @@ class TicketDomain:
         return ticket
 
     @staticmethod
-    def get_ticket(id: int):
+    def get_ticket(id: int, quantity: int):
         """ Returns ticket by event_id """
+        subqry = db.session.query(func.min(Ticket.price)).filter(Ticket.event_id == id, Ticket.quantity == quantity)
+        result = db.session.query(Ticket).filter(Ticket.event_id == id, Ticket.quantity == quantity, Ticket.price == subqry)
 
-        result = Ticket.query.filter_by(event_id=id).all()
         log.debug(f'SELECT ticket by event_id :: {id}, {repr(result)}')
         return result
 
     @staticmethod
     def update_ticket(id: int, data):
         """ Updates existing event when purchased """
-        # dict_ticket_result = [u.__dict__ for u in ticket.all()]
 
         log.debug(f'Checking if ticket exists and open for sale :: parsed data :: {data}')
-        ticket = Ticket.query.filter(Ticket.id == id).filter(Ticket.sold == False).first()
+        ticket = Ticket.query.filter(Ticket.id == id, Ticket.sold == False).first()
 
         if not ticket:
-            log.debug(f'Ticket does not exist or has been sold!')
+            log.debug(f'Ticket does not exist or has been sold')
             return None
 
-        buyer, buyer_id = BuyerDomain.check_buyer(data['email_address'])
+        buyer = BuyerDomain.check_buyer(data['email_address'])
         if buyer:
-            ticket.buyer_id = buyer_id
+            ticket.buyer_id = buyer.id
 
         else:
             # Create new buyer record
@@ -246,9 +276,7 @@ class TicketDomain:
             if 'phone_number' in data:
                 buyer_data['phone_number'] = data['phone_number']
 
-            buyer_id = BuyerDomain().create_buyer(buyer_data).id
-
-            # update ticket record
+            buyer_id = BuyerDomain.create_buyer(buyer_data).id
             ticket.buyer_id = buyer_id
 
         ticket.delivery_by_phone = data['delivery_by_phone']

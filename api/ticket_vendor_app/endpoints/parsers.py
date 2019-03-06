@@ -5,8 +5,6 @@ from flask_restful import reqparse
 
 class BuyerParser:
     """ Class of parameter parsers for the Buyer Entity """
-    # get_args = reqparse.RequestParser()
-    # get_args.add_argument('id', required=True, type=int)
 
     post_args = reqparse.RequestParser()
     post_args.add_argument('email_address', required=True, type=str)
@@ -18,16 +16,19 @@ class BuyerParser:
 #TODO: refactor type parser
 class BuyerReferralParser:
     """ Class of parameter parsers for the buyer_referral Entity """
+
     args = reqparse.RequestParser()
     args.add_argument('type', required=True, type=str)
 
 class CityParser:
     """ Class of parameter parsers for the city Entity """
+
     args = reqparse.RequestParser()
     args.add_argument('name', required=True, type=str)
 
 class EventParser:
     """ Class of parameter parsers for the event Entity """
+
     post_args = reqparse.RequestParser()
     post_args.add_argument('event_id', required=True, type=int)
     post_args.add_argument('city_txt', required=True, type=str)
@@ -36,12 +37,9 @@ class EventParser:
     get_args = post_args.copy()
     get_args.remove_argument('date')
 
-    # get_args = reqparse.RequestParser()
-    # get_args.add_argument('city_txt', required=True, type=str)
-    # get_args.add_argument('event_id', required=True, type=int)
-
 class TicketParser:
     """ Class of parameter parsers for the ticket Entity """
+
     post_args = reqparse.RequestParser()
     post_args.add_argument('event_id', required=True, type=int)
     post_args.add_argument('row', required=True, type=str)
@@ -51,7 +49,7 @@ class TicketParser:
 
     buy_put_args = BuyerParser.post_args.copy()
     buy_put_args.add_argument('sold', required=True, type=bool)
-    buy_put_args.add_argument('delivery_by_phone', required=True, type=bool)
-    buy_put_args.add_argument('delivery_by_email', required=True, type=bool)
+    buy_put_args.add_argument('delivery_by_phone', required=False, type=bool)
+    buy_put_args.add_argument('delivery_by_email', required=False, type=bool)
 
 

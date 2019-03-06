@@ -113,21 +113,8 @@ class Ticket(db.Model):
     price = db.Column(db.INT, nullable=False)
     sold = db.Column(db.BOOLEAN, default=False, server_default='f', nullable=False)
     date_sold = db.Column(db.TIMESTAMP, nullable=True)
-    delivery_by_email = db.Column(db.BOOLEAN, nullable=False)
-    delivery_by_phone = db.Column(db.BOOLEAN, nullable=False)
-    # db.Constraint(
-    #     "(date_sold IS NULL\
-    #     AND buyer_id IS NULL\
-    #     AND delivery_by_email IS NULL\
-    #     AND delivery_by_phone IS NULL)\
-    # OR (date_sold IS NOT NULL\
-    #     AND buyer_id IS NOT NULL\
-    #     AND delivery_by_email IS NOT NULL\
-    #     AND delivery_by_phone IS NULL)\
-    # OR (date_sold IS NULL\
-    #     AND buyer_id IS NOT NULL\
-    #     AND delivery_by_email IS NULL\
-    #     AND delivery_by_phone IS NOT NULL)", name='required_fields_for_sale')
+    delivery_by_email = db.Column(db.BOOLEAN, default=False, nullable=False)
+    delivery_by_phone = db.Column(db.BOOLEAN, default=False, nullable=False)
 
     def __init__(self,
                  event_id: int,
