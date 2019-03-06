@@ -256,10 +256,13 @@ class TicketDomain:
             return None
 
         buyer = BuyerDomain.check_buyer(data['email_address'])
+
+        # Update buyer details if any changed
         if buyer:
             ticket.buyer_id = buyer.id
             buyer.first_name = data['first_name']
             buyer.last_name = data['last_name']
+            buyer.phone_number = data['phone_number']
 
         else:
             # Create new buyer record

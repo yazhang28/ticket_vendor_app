@@ -48,7 +48,6 @@ class TicketParser:
     post_args.add_argument('price', required=True, type=int)
 
     buy_put_args = BuyerParser.post_args.copy()
-    buy_put_args.remove_argument('phone_number')
     buy_put_args.add_argument('sold', required=True, type=bool)
     buy_put_args.add_argument('delivery_by_phone', required=False, type=bool)
     buy_put_args.add_argument('delivery_by_email', required=False, type=bool)
