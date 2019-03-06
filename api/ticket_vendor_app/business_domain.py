@@ -104,7 +104,7 @@ class CityDomain:
     @staticmethod
     def check_city(data: str) -> int:
         """ Checks for city record in DB by name """
-
+        data.lower().replace(" ", "")
         city = City.query.filter_by(name=data).first()
 
         if city:
@@ -125,7 +125,6 @@ class CityDomain:
         city_id = CityDomain.check_city(city_name)
 
         if city_id:
-            log.debug(f'City record already exists in the database :: {repr(city_id)}')
             return None
 
         city = City(name=city_name)
@@ -161,7 +160,7 @@ class EventDomain:
         city_id = CityDomain.check_city(city_txt)
 
         if city_id is None:
-            city = {'name': data['city_txt']}
+            city = {'name': city_txt}
             city_id = CityDomain.create_city(city).id
 
         event = Event(event_id=data['event_id'],
@@ -191,6 +190,7 @@ class EventDomain:
 
         if id:
             subquery = Event.query.filter_by(city_id=id)
+            log.debug
             if month is None:
                 log.debug(f'SELECT event :: {repr(subquery)} by city :: {city} :: id :: {id}')
                 return subquery.all()
@@ -257,6 +257,8 @@ class TicketDomain:
         buyer = BuyerDomain.check_buyer(data['email_address'])
         if buyer:
             ticket.buyer_id = buyer.id
+            buyer.first_name = data['first_name']
+            buyer.last_name = data['last_name']
 
         else:
             # Create new buyer record
