@@ -26,12 +26,13 @@ class BuyerDomain:
             log.debug(f'buyer record already exists in the database :: {repr(buyer)}')
             return None
 
+        buyer_referral_txt = data['buyer_referral_txt'].lower().replace(" ", "")
         buyer_referral = BuyerReferralDomain.\
-            check_buyer_referral(data['buyer_referral_txt'])
+            check_buyer_referral(buyer_referral_txt)
 
         if buyer_referral is None:
             buyer_referral_id = BuyerReferralDomain.create_buyer_referral(
-                {'type': data['buyer_referral_txt']}).id
+                {'type': buyer_referral_txt}).id
         else:
             buyer_referral_id = buyer_referral.id
 
@@ -64,7 +65,6 @@ class BuyerReferralDomain:
     def check_buyer_referral(data: str):
         """ Checks for buyer_referral record in DB by referral_type_txt """
 
-        data = data.lower().replace(" ", "")
         buyer_referral = BuyerReferral.query. \
             filter_by(type=data).first()
 
@@ -104,8 +104,7 @@ class CityDomain:
     @staticmethod
     def check_city(data: str) -> int:
         """ Checks for city record in DB by name """
-
-        data = data.lower().replace(" ", "")
+        
         city = City.query.filter_by(name=data).first()
 
         if city:
@@ -122,14 +121,14 @@ class CityDomain:
 
         log.debug(f'Checking city record already exists in db :: parsed data :: {data}')
 
-        data = data['name']
-        city_id = CityDomain.check_city(data)
+        city_name = data['name'].lower().replace(" ", "")
+        city_id = CityDomain.check_city(city_name)
 
         if city_id:
             log.debug(f'City record already exists in the database :: {repr(city_id)}')
             return None
 
-        city = City(name=data)
+        city = City(name=city_name)
         log.debug(f'INSERT to city Entity :: {repr(city)}')
         db.session.add(city)
         db.session.commit()

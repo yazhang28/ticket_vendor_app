@@ -12,7 +12,6 @@ from api.ticket_vendor_app.endpoints.serializers import EventSerializer
 from database.models import Event
 
 log = logging.getLogger(__name__)
-# event_domain = EventDomain()
 ns = api.namespace('ticket-vendor/event', description='Operations related to ticket_vendor_app Event entity')
 
 @ns.route('/')

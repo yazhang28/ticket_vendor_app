@@ -21,7 +21,7 @@ class BuyerReferralCollection(Resource):
 
     @api.marshal_list_with(BuyerReferralSerializer.payload)
     def get(self):
-        """ Returns list of all buyer referrals """
+        """ Returns list of all buyer_referral records """
 
         buyer_source = BuyerReferral.query.all()
         return buyer_source
@@ -30,7 +30,7 @@ class BuyerReferralCollection(Resource):
     @api.expect(BuyerReferralSerializer.payload)
     @api.marshal_with(BuyerReferralSerializer.payload)
     def post(self):
-        """ Creates new buyer referral """
+        """ Creates new buyer_referral """
 
         parsed_args = BuyerReferralParser.args.parse_args(request)
         buyer_source = BuyerReferralDomain.create_buyer_referral(parsed_args)
@@ -46,8 +46,8 @@ class BuyerReferralItem(Resource):
 
     @api.marshal_with(BuyerReferralSerializer.payload)
     def get(self, id):
-        """ Return BuyerReferral by Id """
+        """ Returns buyer_referral by id """
 
         buyer_referral = BuyerReferral.query.get_or_404(id)
-        log.debug(f'SELECT BuyerReferral by id :: {id}, {repr(buyer_referral)}')
+        log.debug(f'SELECT buyer_referral by id :: {id}, {repr(buyer_referral)}')
         return buyer_referral

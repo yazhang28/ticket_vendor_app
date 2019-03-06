@@ -13,7 +13,6 @@ from database.models import City
 
 log = logging.getLogger(__name__)
 ns = api.namespace('ticket-vendor/city', description='Operations related to City entity')
-# city_domain = CityDomain()
 
 @ns.route('/')
 @api.response(400, "Bad Request")

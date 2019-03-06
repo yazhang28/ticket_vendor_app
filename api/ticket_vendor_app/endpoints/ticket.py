@@ -12,7 +12,6 @@ from api.ticket_vendor_app.endpoints.serializers import TicketSerializer
 from database.models import Ticket
 
 log = logging.getLogger(__name__)
-# ticket_domain = TicketDomain()
 ns = api.namespace('ticket-vendor/ticket',
                    description='Operations related to ticket_vendor_app ticket_vendor_app entity')
 

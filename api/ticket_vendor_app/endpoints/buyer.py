@@ -12,7 +12,6 @@ from api.ticket_vendor_app.endpoints.serializers import BuyerSerializer
 from database.models import Buyer
 
 log = logging.getLogger(__name__)
-# buyer_domain = BuyerDomain()
 ns = api.namespace('ticket-vendor/buyer', description='Operations related to ticket_vendor_app: Buyer entity')
 
 @ns.route('/')
