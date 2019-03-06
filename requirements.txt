@@ -2,6 +2,11 @@ Flask==1.0.2
 Flask-RESTful==0.3.7
 flask-restplus==0.12.1
 Flask-SQLAlchemy==2.3.2
+psycopg2
 SQLAlchemy==1.2.15
-crypto==1.4.1
 python-dateutil==2.7.5
+crypto==1.4.1
+cryptography==2.5
+pycrypto==2.6.1
+pycryptodome==3.6.1
+asn1crypto==0.24.0
