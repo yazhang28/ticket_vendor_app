@@ -8,5 +8,5 @@ python-dateutil==2.7.5
 crypto==1.4.1
 cryptography==2.5
 pycrypto==2.6.1
-pycryptodome==3.6.1
+pycryptodome==3.6.6
 asn1crypto==0.24.0
