@@ -1,7 +1,7 @@
 #!/usr/bin/env python3.7.7
 # coding=utf-8
 """ Grouped Serializers """
-
+from datetime import datetime
 from flask_restplus import fields
 from api.config import api
 
@@ -67,8 +67,8 @@ class TicketSerializer:
         'price': fields.Integer(readOnly=True, min=1),
         'sold': fields.Boolean(readOnly=True),
         'date_sold': fields.DateTime(readOnly=True),
-        'delivery_by_mail': fields.Boolean(readOnly=True, description='Method of ticket delivery'),
-        'delivery_by_phone': fields.Boolean(readOnly=True, description='Method of ticket delivery'),
+        'delivery_by_mail': fields.Boolean(readOnly=True, default=True, description='Method of ticket delivery'),
+        'delivery_by_phone': fields.Boolean(readOnly=True, default=True, description='Method of ticket delivery'),
     })
 
     post_payload = api.model('Ticket POST', {

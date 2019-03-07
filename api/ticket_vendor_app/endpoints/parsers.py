@@ -2,16 +2,17 @@
 # coding=utf-8
 from datetime import datetime
 from flask_restful import reqparse
+from flask_restplus import inputs
 
 class BuyerParser:
     """ Class of parameter parsers for the Buyer Entity """
 
     post_args = reqparse.RequestParser()
-    post_args.add_argument('email_address', required=True, type=str)
+    post_args.add_argument('email_address', required=True, type=inputs.email(check=True))
     post_args.add_argument('first_name', required=True, type=str)
     post_args.add_argument('last_name', required=True, type=str)
     post_args.add_argument('phone_number', required=False, type=str)
-    post_args.add_argument('buyer_referral_txt', required=True, type=str)
+    post_args.add_argument('buyer_referral_txt', required=True, type=str, default='internal')
 
 #TODO: refactor type parser
 class BuyerReferralParser:

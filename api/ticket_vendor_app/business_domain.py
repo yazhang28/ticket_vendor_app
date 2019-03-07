@@ -40,6 +40,7 @@ class BuyerDomain:
                       first_name=data["first_name"],
                       last_name=data["last_name"],
                       buyer_referral_txt=data['buyer_referral_txt'],
+                      phone_number=data['phone_number'],
                       buyer_referral_id=buyer_referral_id)
 
         log.debug(f'INSERT to buyer Entity :: {repr(buyer)}')
@@ -236,9 +237,9 @@ class TicketDomain:
         """ Returns ticket by event_id """
 
         subquery = db.session.query(func.min(Ticket.price)).filter(Ticket.event_id == id,
-                                                                 Ticket.quantity == quantity, Ticket.sold != False).subquery()
+                                                                 Ticket.quantity == quantity, Ticket.sold == False).subquery()
         log.debug(f'subquery :: {repr(subquery)}')
-        result = db.session.query(Ticket).filter(Ticket.event_id == id, Ticket.quantity == quantity, Ticket.sold != False,
+        result = db.session.query(Ticket).filter(Ticket.event_id == id, Ticket.quantity == quantity, Ticket.sold == False,
                                                  Ticket.price.in_(subquery)).first()
 
         log.debug(f'SELECT ticket by event_id :: {id}, {repr(result)}')

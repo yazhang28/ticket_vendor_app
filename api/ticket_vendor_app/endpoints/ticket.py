@@ -13,7 +13,7 @@ from database.models import Ticket
 
 log = logging.getLogger(__name__)
 ns = api.namespace('ticket-vendor/ticket',
-                   description='Operations related to ticket_vendor_app ticket_vendor_app entity')
+                   description='Operations related to the ticket ticket_vendor_app entity')
 
 @ns.route('/')
 @api.response(400, "Bad Request")

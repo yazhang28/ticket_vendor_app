@@ -12,7 +12,7 @@ from api.ticket_vendor_app.endpoints.event import ns as ticket_vendor_event_name
 from api.ticket_vendor_app.endpoints.ticket import ns as ticket_vendor_ticket_namespace
 from api.config import api
 from database import db, reset_database
-import settings
+from run import settings
 
 app = Flask(__name__)
 logging_conf_path = os.path.normpath(os.path.join(os.path.dirname(__file__), './logging.conf'))
@@ -47,8 +47,9 @@ def initialize_app(flask_app):
 
 def main():
     initialize_app(app)
-    with app.app_context():
-        reset_database()
+    if settings.DB_RESET:
+        with app.app_context():
+            reset_database()
 
     log.info('Starting development server at http://{}/api/'.format(app.config['SERVER_NAME']))
     app.run(debug=settings.FLASK_DEBUG)

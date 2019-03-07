@@ -4,7 +4,7 @@ from decrypt import Decrypt
 
 # Flask settings
 # localhost:5000 -> 0.0.0.0:5000
-FLASK_SERVER_NAME = '0.0.0.0:5000'
+FLASK_SERVER_NAME = 'localhost:5000'
 
 FLASK_DEBUG = True  # Do not use debug mode in production
 
@@ -15,6 +15,7 @@ RESTPLUS_MASK_SWAGGER = False
 RESTPLUS_ERROR_404_HELP = False
 
 # SQLAlchemy settings
+DB_RESET = True
 USERNAME = 'masteruser'
 PASSWORD = Decrypt().decrypt_file(file_name='./database/db.enc')
 HOST = 'tms.c08i2kco4yjx.us-east-1.rds.amazonaws.com'
