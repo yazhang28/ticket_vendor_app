@@ -12,7 +12,7 @@ class BuyerParser:
     post_args.add_argument('first_name', required=True, type=str)
     post_args.add_argument('last_name', required=True, type=str)
     post_args.add_argument('phone_number', required=False, type=str)
-    post_args.add_argument('buyer_referral_txt', required=True, type=str, default='internal')
+    post_args.add_argument('buyer_referral_txt', required=True, type=str)
 
 #TODO: refactor type parser
 class BuyerReferralParser:
