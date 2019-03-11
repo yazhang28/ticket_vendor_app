@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.7.7
+#!/usr/bin/env python3.7
 # coding=utf-8
 
 """ Domain logic """
@@ -7,7 +7,6 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import logging
 from sqlalchemy import func
-
 from database import db
 from database.models import Buyer, BuyerReferral, City, Event, Ticket
 
@@ -26,6 +25,7 @@ class BuyerDomain:
             log.debug(f'buyer record already exists in the database :: {repr(buyer)}')
             return None
 
+        # create new buyer_referral record if it doesn't already exist
         buyer_referral_txt = data['buyer_referral_txt'].lower().replace(" ", "")
         buyer_referral = BuyerReferralDomain.\
             check_buyer_referral(buyer_referral_txt)
@@ -35,6 +35,7 @@ class BuyerDomain:
                 {'type': buyer_referral_txt}).id
         else:
             buyer_referral_id = buyer_referral.id
+
 
         buyer = Buyer(email_address=data["email_address"],
                       first_name=data["first_name"],
@@ -50,7 +51,7 @@ class BuyerDomain:
 
     @staticmethod
     def check_buyer(data: str):
-        """ Check for existing buyer record in DB by email_address """
+        """ Checks for existing buyer record in DB by email_address """
 
         log.debug(f'checking for existing buyer record :: parsed args :: {data}')
         buyer = Buyer.query.filter_by(email_address=data).first()
@@ -78,7 +79,7 @@ class BuyerReferralDomain:
     def create_buyer_referral(data: Dict):
         """ Creates new buyer_referral and post to DB
             :param : data (format)
-                {'type': <buyer_referrral_txt>}
+                {'type': <buyer_referral_txt>}
         """
 
         log.debug(f'checking if already exists in buyer_referral :: parsed data :: {data}')
@@ -156,8 +157,8 @@ class EventDomain:
             log.debug(f'Event record already exists in the database :: {repr(event)}')
             return None
 
+        # checks for city and creates a new record if it doesn't exist
         city_txt = data['city_txt'].lower().replace(" ", "")
-
         city_id = CityDomain.check_city(city_txt)
 
         if city_id is None:
@@ -189,30 +190,28 @@ class EventDomain:
         # retrieve city id from city entity
         city = city.lower().replace(" ", "")
         id = CityDomain.check_city(city)
-
-        if id:
-            subquery = Event.query.filter_by(city_id=id)
-            log.debug
-            if month is None:
-                log.debug(f'SELECT event :: {repr(subquery)} by city :: {city} :: id :: {id}')
-                return subquery.all()
-
-            current_date = datetime.utcnow().date()
-            future_date = current_date + relativedelta(months=month)
-
-            result = Event.query \
-                .filter(Event.city_id == id) \
-                .filter(Event.date >= current_date) \
-                .filter(Event.date <= future_date) \
-                .all()
-
-            if result:
-                log.debug(f'SELECT event :: {repr(result)} by city :: {city} :: in range :: {current_date} - {future_date}')
-                return result
-            log.debug(f'No events found for city :: {city} in specified range :: {current_date} - {future_date}')
-        else:
+        
+        if id is None:
             log.debug(f'No event for this city has been added yet')
-        return []
+            return []
+
+        subquery = Event.query.filter_by(city_id=id)
+        if month is None:
+            log.debug(f'SELECT event :: {repr(subquery)} by city :: {city} :: id :: {id}')
+            return subquery.all()
+
+        current_date = datetime.utcnow().date()
+        future_date = current_date + relativedelta(months=month)
+
+        result = Event.query \
+            .filter(Event.city_id == id) \
+            .filter(Event.date >= current_date) \
+            .filter(Event.date <= future_date) \
+            .all()
+
+        if result:
+            log.debug(f'SELECT event :: {repr(result)} by city :: {city} :: in range :: {current_date} - {future_date}')
+            return result
 
 class TicketDomain:
     """ Domain logic for ticket Entity """
@@ -264,7 +263,6 @@ class TicketDomain:
             buyer.first_name = data['first_name']
             buyer.last_name = data['last_name']
             buyer.phone_number = data['phone_number']
-
         else:
             # Create new buyer record
             buyer_data = {'email_address': data['email_address'],

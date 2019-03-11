@@ -20,7 +20,8 @@ logging.config.fileConfig(logging_conf_path)
 log = logging.getLogger(__name__)
 
 def configure_app(flask_app):
-
+    """ Configure app with settings from settings.py """
+    
     flask_app.config['SERVER_NAME'] = settings.FLASK_SERVER_NAME
     flask_app.config['SQLALCHEMY_DATABASE_URI'] = settings.SQLALCHEMY_DATABASE_URI
     flask_app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = settings.SQLALCHEMY_TRACK_MODIFICATIONS
@@ -32,6 +33,7 @@ def configure_app(flask_app):
 
 def initialize_app(flask_app):
     """ Initialize app and flask configuration """
+
     configure_app(flask_app)
     blueprint = Blueprint('api', __name__, url_prefix='/api')
     api.init_app(blueprint)
